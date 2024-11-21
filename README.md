@@ -70,9 +70,9 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-sectioned-blog-pagin
 
 [MIT](LICENSE)
 
-[npm-badge]: https://img.shields.io/npm/v/metalsmith-blog-lists.svg
-[npm-url]: https://www.npmjs.com/package/metalsmith-blog-lists
+[npm-badge]: https://img.shields.io/npm/v/metalsmith-sectioned-blog-pagination.svg
+[npm-url]: https://www.npmjs.com/package/metalsmith-sectioned-blog-pagination
 [metalsmith-badge]: https://img.shields.io/badge/metalsmith-plugin-green.svg?longCache=true
 [metalsmith-url]: https://metalsmith.io
-[license-badge]: https://img.shields.io/github/license/wernerglinka/metalsmith-blog-lists
+[license-badge]: https://img.shields.io/github/license/wernerglinka/metalsmith-sectioned-blog-pagination
 [license-url]: LICENSE
