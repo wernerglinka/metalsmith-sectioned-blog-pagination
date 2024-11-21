@@ -26,16 +26,46 @@ yarn add metalsmith-sectioned-blog-pagination
 
 Pass `metalsmith-sectioned-blog-pagination` to `metalsmith.use` :
 
+The plugin must be used before the Markdown, Permalinks and Layouts plugins.
+
 ```js
 import blogPages from `metalsmith-sectioned-blog-pagination`;
 
-.use( blogPages( {
-  "pagesPerPage": 12,
-  "blogDirectory": "blog/",
-} ) )
+Metalsmith( __dirname )
+  .use(collections({
+    blog: {
+      pattern: "blog/*.md",
+      sortBy: "date",
+      reverse: true,
+      limit: 50,
+    },
+  }))
+  .use(blogPages({
+    "pagesPerPage": 12,
+    "blogDirectory": "blog/",
+  }))
+  .use(markdown())
+  .use(permalinks())
+  .use(layouts())
+  .
+  .
 ```
+During the build process, the plugin will create a set of blog landing pages with the specified number of blog posts per page, e.g. `/blog/`, `/blog/2`, `/blog/3`... In a Nunjucks template, a pager would be constructed like this:
 
-
+```html
+<ul class="blogs-pagination">
+  {% for i in range(0, params.numberOfPages) -%}
+    <li {% if ((i + 1) == params.pageNumber) %}class="active"{% endif %}>
+      {% if i == 0 %}
+        <a href="/blog/">1</a>
+      {% else %}
+        <a href="/blog/{{ i + 1 }}/">{{ i + 1 }}</a>
+      {% endif %}
+    </li>
+  {%- endfor %}
+</ul>
+```
+Here is [the complete template](https://github.com/wernerglinka/glinka.dev.2024/blob/main/templates/blocks/all-blogs.njk) for such a blog landing page. And here is [the implementation](https://www.glinka.co/blog/).
 
 ### Debug
 
