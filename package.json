@@ -1,0 +1,49 @@
+{
+  "name": "metalsmith-sectioned-blog-pagination",
+  "version": "0.0.1",
+  "description": "Metalsmith plugin that generates paginated blog landing pages from a main blog template",
+  "keywords": [
+    "metalsmith-blog-padination",
+    "metalsmith-plugin",
+    "metalsmith",
+    "static-site",
+    "pagination"
+  ],
+  "main": "lib/index.js",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wernerglinka/metalsmith-sectioned-blog-pagination.git"
+  },
+  "files": [
+    "lib",
+    "CHANGELOG.md"
+  ],
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "author": "Werner Glinka (https://glinka.co)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wernerglinka/metalsmith-sectioned-blog-pagination/issues"
+  },
+  "homepage": "https://github.com/wernerglinka/metalsmith-sectioned-blog-pagination#readme",
+  "devDependencies": {
+    "chai": "^5.1.2",
+    "metalsmith": "^2.6.3",
+    "mocha": "^10.8.2"
+  },
+  "peerDependencies": {
+    "metalsmith": "^2.5.1"
+  },
+  "scripts": {
+    "test": "mocha 'test/**/*.js'"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

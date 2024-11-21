@@ -1,0 +1,15 @@
+node_modules
+.npm
+npm-debug.log*
+build
+.DS_Store
+.idea
+build-notes
+.cache
+.tmp-gulp-compile-*
+.env
+*.tgz
+.eslintcache
+.nyc_output
+coverage.info
+test/fixtures/*/build
