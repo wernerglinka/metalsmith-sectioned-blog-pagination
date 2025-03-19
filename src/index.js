@@ -55,7 +55,7 @@ function validateFiles(files, mainTemplate) {
 /**
  * Recursively update nested object property
  * Finds all instances of the key in the object tree and updates their values
- * 
+ *
  * @param {Object} obj - Target object to traverse and update
  * @param {string} key - Property name to search for and update
  * @param {*} value - New value to assign when property is found
@@ -66,12 +66,12 @@ function updateProperty(obj, key, value) {
   if (!obj || typeof obj !== 'object') {
     return;
   }
-  
+
   Object.keys(obj).forEach((k) => {
     if (k === key) {
       obj[k] = value;
     }
-    
+
     // Recursively check nested objects but avoid circular references
     if (obj[k] && typeof obj[k] === 'object') {
       updateProperty(obj[k], key, value);
@@ -140,7 +140,7 @@ function blogPages(options = {}) {
       // Calculate pagination
       const totalPages = Math.ceil(posts.length / opts.pagesPerPage);
       debug('Found %d posts, creating %d pages', posts.length, totalPages);
-      
+
       // Skip if only one page is needed
       if (totalPages <= 1) {
         debug('Only one page needed, skipping pagination');
