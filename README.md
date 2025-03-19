@@ -45,8 +45,9 @@ Metalsmith( __dirname )
     },
   }))
   .use(blogPages({
-    "pagesPerPage": 12,   // Number of blog posts per page
-    "blogDirectory": "blog/",  // Directory containing your blog posts
+    "pagesPerPage": 12,            // Number of blog posts per page
+    "blogDirectory": "blog/",      // Directory containing your blog posts
+    "mainTemplate": "blog.md"      // Main blog template file (default: "blog.md")
   }))
   .use(markdown())
   .use(permalinks())
