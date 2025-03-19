@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import blogPages from '../lib/index.js';
+import blogPages from '../src/index.js';
 
 describe( 'blogPages plugin', () => {
   let files, metalsmith;

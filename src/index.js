@@ -37,11 +37,10 @@ function validateOptions(options) {
  * @private
  */
 function validateFiles(files) {
-  var _files$blogMd$sectio;
   if (!files['blog.md']) {
     throw new Error('blog.md template file is required');
   }
-  if (!((_files$blogMd$sectio = files['blog.md'].sections) != null && _files$blogMd$sectio.some(s => s.hasPagingParams))) {
+  if (!files['blog.md'].sections?.some((s) => s.hasPagingParams)) {
     throw new Error('blog.md must contain a section with hasPagingParams: true');
   }
 }
@@ -54,7 +53,7 @@ function validateFiles(files) {
  * @private
  */
 function updateProperty(obj, key, value) {
-  Object.keys(obj).forEach(k => {
+  Object.keys(obj).forEach((k) => {
     if (k === key) {
       obj[k] = value;
     }
@@ -75,16 +74,11 @@ function updateProperty(obj, key, value) {
  * @param {Number} params.current - Current page number
  * @private
  */
-function updatePagination(section, {
-  total,
-  pages,
-  pageSize,
-  start,
-  current
-}) {
+function updatePagination(section, { total, pages, pageSize, start, current }) {
   if (!section) {
     return;
   }
+
   const updates = {
     numberOfBlogs: total,
     numberOfPages: pages,
@@ -92,6 +86,7 @@ function updatePagination(section, {
     pageStart: start,
     pageNumber: current
   };
+
   Object.entries(updates).forEach(([key, value]) => {
     updateProperty(section, key, value);
   });
@@ -106,21 +101,23 @@ function updatePagination(section, {
  * @returns {import('metalsmith').Plugin} - Metalsmith plugin function
  */
 function blogPages(options = {}) {
-  const opts = {
-    ...defaults,
-    ...options
-  };
+  const opts = { ...defaults, ...options };
+
   return function (files, metalsmith, done) {
     try {
       validateOptions(opts);
       validateFiles(files);
+
       const debug = metalsmith.debug ? metalsmith.debug('blogPages') : () => {};
       debug('Running with options: %O', opts);
-      const posts = Object.keys(files).filter(file => file.startsWith(opts.blogDirectory));
+
+      const posts = Object.keys(files).filter((file) => file.startsWith(opts.blogDirectory));
+
       if (posts.length === 0) {
         debug('No blog posts found in %s', opts.blogDirectory);
         return done();
       }
+
       const totalPages = Math.ceil(posts.length / opts.pagesPerPage);
       if (totalPages <= 1) {
         return done();
@@ -128,7 +125,8 @@ function blogPages(options = {}) {
 
       // Update main blog page
       const mainBlog = files['blog.md'];
-      const pagingSection = mainBlog.sections.find(s => s.hasPagingParams);
+      const pagingSection = mainBlog.sections.find((s) => s.hasPagingParams);
+
       updatePagination(pagingSection, {
         total: posts.length,
         pages: totalPages,
@@ -142,7 +140,8 @@ function blogPages(options = {}) {
         try {
           const pagePath = `blog/${page}.md`;
           const pageContent = JSON.parse(JSON.stringify(mainBlog));
-          const section = pageContent.sections.find(s => s.hasPagingParams);
+          const section = pageContent.sections.find((s) => s.hasPagingParams);
+
           updatePagination(section, {
             total: posts.length,
             pages: totalPages,
@@ -150,11 +149,13 @@ function blogPages(options = {}) {
             start: (page - 1) * opts.pagesPerPage,
             current: page
           });
+
           files[pagePath] = pageContent;
         } catch (err) {
           throw new Error(`Failed to create page ${page}: ${err.message}`);
         }
       }
+
       done();
     } catch (err) {
       done(err);
@@ -162,10 +163,10 @@ function blogPages(options = {}) {
   };
 }
 
+// ESM export
+export default blogPages;
+
 // CommonJS export compatibility
 if (typeof module !== 'undefined') {
   module.exports = blogPages;
 }
-
-export { blogPages as default };
-//# sourceMappingURL=index.js.map
