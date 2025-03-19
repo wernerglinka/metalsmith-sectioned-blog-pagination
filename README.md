@@ -8,6 +8,15 @@ Metalsmith plugin that generates paginated blog landing pages from a main blog t
 
 Metalsmith Sectioned Blog Pagination creates metadata for blog pagination for pages built with a [modular page building paradigm](https://metalsmith-components.netlify.app/).
 
+## Dual Module Support (ESM and CommonJS)
+
+This plugin supports both ESM and CommonJS environments with no configuration needed:
+
+- ESM: `import prism from 'metalsmith-prism'`
+- CommonJS: `const prism = require('metalsmith-prism')`
+
+The package detects your environment automatically and provides the appropriate module format. This makes it compatible with both modern ESM projects and legacy CommonJS codebases.
+
 ## Installation
 
 **NPM:**
