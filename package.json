@@ -58,7 +58,7 @@
     "lint:check": "eslint --fix-dry-run .",
     "release": "npm run build && node ./release.js",
     "release:check": "npm run build && node ./release.js --dry-run",
-    "test": "c8 mocha test/index.mjs -t 15000",
+    "test": "c8 mocha test/**/*.mjs -t 15000",
     "test:debug": "DEBUG=metalsmith-sectioned-blog-pagination:* npm test",
     "test:e2e": "serve -l 3000 test/fixtures"
   },
@@ -67,5 +67,15 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "c8": {
+    "all": true,
+    "include": [
+      "src/**/*.js"
+    ],
+    "reporter": [
+      "text",
+      "lcov"
+    ]
   }
 }
