@@ -31,15 +31,26 @@ function determineBadgeColor(percentage) {
 
 async function main() {
   try {
-    // Run lcov-parse on the lcov.info file
-    const lcovPath = path.join(rootDir, 'coverage', 'lcov.info');
-    const output = execSync(`npx lcov-parse ${lcovPath}`).toString();
-    const coverageData = parseCoverageReport(output);
-    
-    // Update the README.md file with the coverage badge
-    await updateReadme(coverageData);
-    
-    console.log(`Updated README.md with coverage badge: ${coverageData.percentage}% coverage`);
+    process.stderr.write('Updating coverage badge in README.md...\n');
+
+    // Run the full test suite (both ESM and CJS tests)
+    process.stderr.write('Running full test suite for coverage data...\n');
+    execSync('npm test', { stdio: 'inherit' });
+
+    // Get the coverage data from the c8 report
+    process.stderr.write('Extracting coverage data from report...\n');
+    const coverageOutput = execSync('npx c8 report --reporter=text', { encoding: 'utf-8' });
+
+    // Parse the coverage report
+    const coverageData = parseCoverageReport(coverageOutput);
+
+    if (coverageData) {
+      process.stderr.write(`Successfully parsed coverage data\n`);
+      await updateReadme(coverageData);
+    } else {
+      console.error('ERROR: Could not parse coverage data from c8 report');
+      process.exit(1);
+    }
   } catch (error) {
     console.error('Error updating coverage badge:', error);
     process.exit(1);
@@ -47,64 +58,168 @@ async function main() {
 }
 
 function parseCoverageReport(report) {
-  // Parse the JSON output from lcov-parse
-  const data = JSON.parse(report);
-  
-  // Calculate total lines and covered lines
-  let totalLines = 0;
-  let coveredLines = 0;
-  
-  data.forEach((file) => {
-    totalLines += file.lines.found;
-    coveredLines += file.lines.hit;
-  });
-  
-  // Calculate coverage percentage
-  const percentage = totalLines === 0 ? 0 : Math.round((coveredLines / totalLines) * 100);
-  
-  return {
-    totalLines,
-    coveredLines,
-    percentage
-  };
+  try {
+    const lines = report.split('\n');
+
+    // Find the "All files" line
+    const allFilesLine = lines.find((line) => line.includes('All files'));
+
+    if (!allFilesLine) {
+      console.error('ERROR: Could not find "All files" line in coverage report');
+      return null;
+    }
+
+    // Parse the coverage values
+    const values = allFilesLine.split('|').map((v) => v.trim());
+
+    if (values.length < 5) {
+      console.error('ERROR: Coverage report format is invalid');
+      return null;
+    }
+
+    // Get individual file data
+    const fileData = [];
+    for (let i = 0; i < lines.length; i++) {
+      // Skip header lines and summary lines
+      if (
+        lines[i].includes('File') ||
+        lines[i].includes('All files') ||
+        lines[i].includes('---') ||
+        !lines[i].trim()
+      ) {
+        continue;
+      }
+
+      // This should be a file line
+      const fileValues = lines[i].split('|').map((v) => v.trim());
+      if (fileValues.length >= 5) {
+        const filePath = fileValues[0].trim();
+        // Only include actual source files (skip directories)
+        if (!filePath.includes('All files') && !filePath.endsWith('/')) {
+          fileData.push({
+            path: filePath,
+            statements: fileValues[1],
+            branches: fileValues[2],
+            functions: fileValues[3],
+            lines: fileValues[4],
+            uncoveredLines: fileValues.length > 5 ? fileValues[5] : ''
+          });
+        }
+      }
+    }
+
+    return {
+      summary: {
+        statements: parseFloat(values[1]),
+        branches: parseFloat(values[2]),
+        functions: parseFloat(values[3]),
+        lines: parseFloat(values[4])
+      },
+      files: fileData
+    };
+  } catch (error) {
+    console.error(`Error parsing coverage report: ${error.message}`);
+    return null;
+  }
 }
 
 async function updateReadme(coverageData) {
-  const readmePath = path.join(rootDir, 'README.md');
-  let readme = await fs.readFile(readmePath, 'utf8');
-  
-  const { percentage } = coverageData;
-  const color = determineBadgeColor(percentage);
-  
-  // Create the coverage badge
-  const coverageBadge = `[![Coverage](https://img.shields.io/badge/coverage-${percentage}%25-${color}.svg?style=flat-square)](https://github.com/wernerglinka/metalsmith-sectioned-blog-pagination/blob/master/README.md)`;
-  
-  // Check if a coverage badge already exists
-  const badgeRegex = /\[!\[Coverage\]\(https:\/\/img\.shields\.io\/badge\/coverage-\d+%25-[a-z]+\.svg(\?style=[a-z-]+)?\)\]\([^)]+\)/;
-  
-  if (badgeRegex.test(readme)) {
-    // Replace the existing badge
-    readme = readme.replace(badgeRegex, coverageBadge);
-  } else {
-    // Find the position to add the badge (after the first badge)
-    const firstBadgePos = readme.indexOf('[![');
-    if (firstBadgePos !== -1) {
-      // Find the end of the badge line
-      const endOfLine = readme.indexOf('\n', firstBadgePos);
-      // Add the coverage badge after the line with the first badge
-      readme = 
-        readme.substring(0, endOfLine) + 
-        ' ' + 
-        coverageBadge + 
-        readme.substring(endOfLine);
+  try {
+    // Find the src directory coverage data
+    const srcEntry = coverageData.files.find((file) => file.path.trim() === 'src');
+
+    // Use src coverage if available, otherwise use overall coverage
+    let coveragePercentage;
+    if (srcEntry) {
+      coveragePercentage = Math.round(parseFloat(srcEntry.lines));
+      process.stderr.write(`Source code coverage: ${coveragePercentage}%\n`);
     } else {
-      console.warn('Could not find a position to add the coverage badge.');
-      return;
+      coveragePercentage = Math.round(coverageData.summary.lines);
+      process.stderr.write(`Overall coverage: ${coveragePercentage}%\n`);
     }
+
+    // Determine badge color based on coverage percentage
+    const badgeColor = determineBadgeColor(coveragePercentage);
+
+    // Read README.md
+    const readmePath = path.join(rootDir, 'README.md');
+    const readme = await fs.readFile(readmePath, 'utf-8');
+
+    // Look for different badge formats and replace the correct one
+    const badgePatterns = [
+      /\[coverage-badge\]: https:\/\/img\.shields\.io\/badge\/coverage-\d+%25-[a-z]+/,
+      /\[coverage-badge\]: https:\/\/img\.shields\.io\/badge\/test%20coverage-\d+%25-[a-z]+/
+    ];
+
+    // Create possible new badge formats
+    const newBadgeFormats = [
+      `[coverage-badge]: https://img.shields.io/badge/coverage-${coveragePercentage}%25-${badgeColor}`,
+      `[coverage-badge]: https://img.shields.io/badge/test%20coverage-${coveragePercentage}%25-${badgeColor}`
+    ];
+
+    let updatedReadme = readme;
+    let badgeFound = false;
+
+    // Try to replace with the correct format
+    for (let i = 0; i < badgePatterns.length; i++) {
+      if (badgePatterns[i].test(readme)) {
+        updatedReadme = readme.replace(badgePatterns[i], newBadgeFormats[i]);
+        badgeFound = true;
+        break;
+      }
+    }
+
+    if (!badgeFound) {
+      console.error('ERROR: Could not find coverage badge in README.md');
+      process.exit(1);
+    }
+
+    // Look for the Test Coverage section
+    const testCoverageSection = updatedReadme.match(/## Test Coverage\s+([\s\S]*?)(?=\s+##|$)/);
+
+    if (!testCoverageSection) {
+      console.error('ERROR: Could not find Test Coverage section in README.md');
+      process.exit(1);
+    }
+
+    // Create the new coverage report table
+    const newReport = `File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s\n----------|---------|----------|---------|---------|-------------------`;
+
+    // Format the report focusing on src files
+    let fullReport = newReport;
+
+    // For the summary line
+    fullReport += `\nAll files | ${coverageData.summary.statements} | ${coverageData.summary.branches} | ${coverageData.summary.functions} | ${coverageData.summary.lines} |`;
+
+    // For the individual file
+    // Show just "index.js" without the src/ prefix, as it's cleaner and matches the expected format
+    coverageData.files.forEach((file) => {
+      const fileName = file.path.replace('src/', '');
+      fullReport += `\n ${fileName} | ${file.statements} | ${file.branches} | ${file.functions} | ${file.lines} | ${file.uncoveredLines}`;
+    });
+
+    // Create full coverage section content
+    const newCoverageSection = `## Test Coverage
+
+This project maintains high statement and line coverage for the source code. Coverage is verified during the release process using the c8 coverage tool.
+
+Coverage report (from latest test run):
+
+${fullReport}
+
+`;
+
+    // Replace the entire Test Coverage section
+    updatedReadme = updatedReadme.replace(/## Test Coverage[\s\S]*?(?=\s+##|$)/, newCoverageSection);
+    process.stderr.write('Updated Test Coverage section in README.md\n');
+
+    // Write updated README.md
+    await fs.writeFile(readmePath, updatedReadme, 'utf-8');
+    process.stderr.write('Updated README.md with current coverage information\n');
+  } catch (error) {
+    console.error('Error updating README:', error);
+    process.exit(1);
   }
-  
-  // Write the updated README.md
-  await fs.writeFile(readmePath, readme, 'utf8');
 }
 
 main();
