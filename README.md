@@ -109,16 +109,6 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-sectioned-blog-pagin
 ## Test Coverage
 
 This project maintains high statement and line coverage for the source code. Coverage is verified during the release process using the c8 coverage tool.
-
-Coverage report (from latest test run):
-
-File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
-----------|---------|----------|---------|---------|-------------------
-All files | 97.04 | 89.18 | 83.33 | 97.04 |
- index.js | 97.04 | 89.18 | 83.33 | 97.04 | 67-68,95-96,202-203
-
-
-
  
 ## Author
 
@@ -134,6 +124,6 @@ All files | 97.04 | 89.18 | 83.33 | 97.04 |
 [metalsmith-url]: https://metalsmith.io
 [license-badge]: https://img.shields.io/github/license/wernerglinka/metalsmith-sectioned-blog-pagination
 [license-url]: LICENSE
-[coverage-badge]: https://img.shields.io/badge/coverage-97%25-brightgreen
+[coverage-badge]: https://img.shields.io/badge/test%20coverage-97%25-brightgreen
 [coverage-url]: #test-coverage
 [modules-badge]: https://img.shields.io/badge/modules-ESM%2FCJS-blue
