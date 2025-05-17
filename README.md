@@ -1,30 +1,31 @@
 # Metalsmith Sectioned Blog Pagination
 
-Metalsmith plugin that generates paginated blog landing pages from a main blog template
+Metalsmith plugin that generates  metadata for blog pagination for pages built with a [modular page building paradigm](https://metalsmith-components.netlify.app/).
 
 [![metalsmith: plugin][metalsmith-badge]][metalsmith-url]
 [![npm: version][npm-badge]][npm-url]
 [![license: ISC][license-badge]][license-url]
+[![coverage][coverage-badge]][coverage-url]
+[![ESM/CommonJS][modules-badge]][npm-url]
 
-Metalsmith Sectioned Blog Pagination creates metadata for blog pagination for pages built with a [modular page building paradigm](https://metalsmith-components.netlify.app/).
+## Dual Module Support (ESM and CommonJS)
+
+This plugin supports both ESM and CommonJS environments with no configuration needed:
+
+- ESM: `import prism from 'metalsmith-prism'`
+- CommonJS: `const prism = require('metalsmith-prism')`
+
+The package detects your environment automatically and provides the appropriate module format. This makes it compatible with both modern ESM projects and legacy CommonJS codebases.
 
 ## Installation
-
-**NPM:**
 
 ```
 npm install metalsmith-sectioned-blog-pagination
 ```
 
-**Yarn:**
-
-```
-yarn add metalsmith-sectioned-blog-pagination
-```
-
 ## Usage
 
-Pass `metalsmith-sectioned-blog-pagination` to `metalsmith.use` :
+Pass options to `metalsmith-sectioned-blog-pagination` in `metalsmith.use` :
 
 The plugin must be used before the Markdown, Permalinks and Layouts plugins.
 
@@ -72,14 +73,20 @@ During the build process, the plugin will create a set of blog landing pages wit
 </ul>
 ```
 
-Here is [the complete template](https://github.com/wernerglinka/glinka.dev.2024/blob/main/templates/blocks/all-blogs.njk) for such a blog landing page. And here is [the implementation](https://www.glinka.co/blog/).
+And [complete template implementation in Nunjucks](https://github.com/wernerglinka/glinka.dev.2024/blob/main/templates/blocks/all-blogs.njk) for such a blog landing page can be viewed here. And here is an example of [an implementation](https://www.glinka.co/blog/).
 
 ### Debug
 
 To enable debug logs, set the `DEBUG` environment variable to `metalsmith-sectioned-blog-pagination`:
 
+Linux/Mac:
 ```
-metalsmith.env('DEBUG', 'metalsmith-sectioned-blog-pagination*')
+DEBUG=metalsmith-sectioned-blog-pagination
+```
+
+Windows:
+```
+set DEBUG=metalsmith-sectioned-blog-pagination
 ```
 
 ### CLI usage
@@ -99,6 +106,10 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-sectioned-blog-pagin
 }
 ```
 
+## Test Coverage
+
+This project maintains high statement and line coverage for the source code. Coverage is verified during the release process using the c8 coverage tool.
+
 ## Author
 
 [werner@glinka.co](https://github.com/wernerglinka)
@@ -113,3 +124,6 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-sectioned-blog-pagin
 [metalsmith-url]: https://metalsmith.io
 [license-badge]: https://img.shields.io/github/license/wernerglinka/metalsmith-sectioned-blog-pagination
 [license-url]: LICENSE
+[coverage-badge]: https://img.shields.io/badge/test%20coverage-97%25-brightgreen
+[coverage-url]: https://github.com/wernerglinka/metalsmith-sectioned-blog-pagination/actions/workflows/test.yml
+[modules-badge]: https://img.shields.io/badge/modules-ESM%2FCJS-blue
