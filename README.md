@@ -9,14 +9,16 @@ Metalsmith plugin that generates  metadata for blog pagination for pages built w
 [![ESM/CommonJS][modules-badge]][npm-url]
 [![Known Vulnerabilities](https://snyk.io/test/github/wernerglinka/metalsmith-sectioned-blog-pagination/badge.svg)](https://snyk.io/test/github/wernerglinka/metalsmith-sectioned-blog-pagination/badge)
 
-## Dual Module Support (ESM and CommonJS)
+## Features
 
-This plugin supports both ESM and CommonJS environments with no configuration needed:
+- **ESM and CommonJS support**:
+  - ESM: `import prism from 'metalsmith-prism'`
+  - CommonJS: `const prism = require('metalsmith-prism')`
 
-- ESM: `import prism from 'metalsmith-prism'`
-- CommonJS: `const prism = require('metalsmith-prism')`
+## Requirements
 
-The package detects your environment automatically and provides the appropriate module format. This makes it compatible with both modern ESM projects and legacy CommonJS codebases.
+- Node.js >= 18.0.0
+- Metalsmith >= 2.6.0
 
 ## Installation
 
@@ -31,12 +33,6 @@ Pass options to `metalsmith-sectioned-blog-pagination` in `metalsmith.use` :
 The plugin must be used before the Markdown, Permalinks and Layouts plugins.
 
 ```js
-// ES Module
-import blogPages from 'metalsmith-sectioned-blog-pagination';
-
-// CommonJS
-const blogPages = require('metalsmith-sectioned-blog-pagination');
-
 Metalsmith( __dirname )
   .use(collections({
     blog: {
@@ -54,8 +50,7 @@ Metalsmith( __dirname )
   .use(markdown())
   .use(permalinks())
   .use(layouts())
-  .
-  .
+  ...
 ```
 
 During the build process, the plugin will create a set of blog landing pages with the specified number of blog posts per page, e.g. `/blog/`, `/blog/2`, `/blog/3`... In a Nunjucks template, a pager would be constructed like this:
