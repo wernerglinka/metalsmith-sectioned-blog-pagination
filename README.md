@@ -7,7 +7,7 @@ Metalsmith plugin that generates  metadata for blog pagination for pages built w
 [![license: ISC][license-badge]][license-url]
 [![coverage][coverage-badge]][coverage-url]
 [![ESM/CommonJS][modules-badge]][npm-url]
-[![Known Vulnerabilities](https://snyk.io/test/github/wernerglinka/metalsmith-sectioned-blog-pagination/badge.svg)](https://snyk.io/test/github/wernerglinka/metalsmith-sectioned-blog-pagination/badge)
+[![Known Vulnerabilities](https://snyk.io/test/npm/metalsmith-sectioned-blog-pagination/badge.svg)](https://snyk.io/test/npm/metalsmith-sectioned-blog-pagination)
 
 ## Features
 
