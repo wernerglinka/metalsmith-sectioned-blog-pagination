@@ -1,6 +1,6 @@
 {
   "name": "metalsmith-sectioned-blog-pagination",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Metalsmith plugin that generates paginated blog landing pages from a main blog template",
   "keywords": [
     "metalsmith-blog-padination",
@@ -54,16 +54,21 @@
     "metalsmith": "^2.5.1"
   },
   "scripts": {
-    "coverage": "c8 --include=src/**/*.js --reporter=lcov --reporter=text-summary mocha test/**/*.mjs -t 15000",
+    "audit": "npm audit",
     "build": "microbundle --entry src/index.js --output lib/index.js --target node -f esm,cjs --strict --generateTypes=false",
-    "prepublishOnly": "npm run build",
+    "coverage": "c8 --include=src/**/*.js --reporter=lcov --reporter=text-summary mocha test/**/*.mjs -t 15000",
+    "depcheck": "depcheck",
     "format": "prettier --write \"**/*.{js,json}\"",
     "format:check": "prettier --list-different \"**/*.{yml,md,js,json}\"",
     "lint": "eslint --fix .",
     "lint:check": "eslint --fix-dry-run .",
-    "release": "npm run build && GITHUB_TOKEN=$(grep GITHUB_TOKEN .env | cut -d '=' -f2) ./node_modules/.bin/release-it . ",
-    "release:check": "npm run lint:check && npm run build && GITHUB_TOKEN=$(grep GITHUB_TOKEN .env | cut -d '=' -f2) ./node_modules/.bin/release-it . --dry-run",
+    "prepublishOnly": "npm run build",
+    "release:check": "npm run lint:check && npm run build && release-it --dry-run",
+    "release:patch": "./scripts/release.sh patch --ci",
+    "release:minor": "./scripts/release.sh minor --ci",
+    "release:major": "./scripts/release.sh major --ci",
     "test": "c8 mocha test/**/*.mjs -t 15000",
+    "test:coverage": "c8 npm test",
     "test:debug": "DEBUG=metalsmith-sectioned-blog-pagination:* npm test",
     "test:e2e": "serve -l 3000 test/fixtures"
   },

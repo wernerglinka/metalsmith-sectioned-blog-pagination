@@ -1,25 +1,29 @@
 {
-  "hooks": {
-    "before:init": ["npm run lint", "npm test"],
-    "after:bump": "npx auto-changelog -p --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release)'",
-    "after:npm:bump": "npm pack && ls *.tgz",
-    "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
-  },
   "git": {
-    "commitMessage": "Release ${version}",
-    "commitArgs": ["-S"],
-    "tagAnnotation": "Release ${version}",
-    "tagArgs": ["-s"],
-    "changelog": "npx auto-changelog -u --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release)' --stdout -t https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
-  },
-  "npm": {
-    "publish": false
+    "commitMessage": "chore: release v${version}",
+    "requireCleanWorkingDir": true,
+    "requireBranch": "main",
+    "tag": true,
+    "tagName": "v${version}",
+    "push": true,
+    "changelog": "npx auto-changelog -u --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release)' --stdout"
   },
   "github": {
     "release": true,
-    "repo": "wernerglinka/metalsmith-sectioned-blog-pagination",
-    "releaseName": "metalsmith-sectioned-blog-pagination ${version}",
-    "tokenRef": "GITHUB_TOKEN",
-    "assets": ["metalsmith-sectioned-blog-pagination-${version}.tgz"]
+    "releaseName": "v${version}",
+    "draft": false,
+    "autoGenerate": false,
+    "releaseNotes": "npx auto-changelog -u --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release)' --stdout",
+    "tokenRef": "GH_TOKEN"
+  },
+  "npm": {
+    "publish": false,
+    "publishPath": "."
+  },
+  "hooks": {
+    "before:init": ["npm test", "npm run lint:check"],
+    "before:git": ["gh --version || (echo 'GitHub CLI not found. Install with: brew install gh' && exit 1)", "gh auth status || (echo 'GitHub CLI not authenticated. Run: gh auth login' && exit 1)"],
+    "after:bump": "npx auto-changelog -p --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release)' && git add CHANGELOG.md",
+    "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
   }
 }

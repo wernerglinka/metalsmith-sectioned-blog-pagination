@@ -3,72 +3,48 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ['lib/**/*', 'test/fixtures/**/*', 'node_modules/**/*', 'coverage/**/*']
+    ignores: ['lib/**/*', 'node_modules/**/*', 'coverage/**/*'],
   },
   js.configs.recommended,
   {
     languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
       globals: {
-        ...globals.node
+        ...globals.node,
+        ...globals.mocha,
       },
-      ecmaVersion: 2022,
-      sourceType: 'module'
     },
     rules: {
-      'no-console': [
-        'warn',
-        {
-          allow: ['warn', 'error']
-        }
-      ],
-      'prefer-const': 'error',
+      // Error prevention
+      'no-console': ['error', { allow: ['warn', 'error'] }],
+      'no-debugger': 'error',
+      'no-alert': 'error',
+      
+      // Best practices
+      'curly': ['error', 'all'],
+      'eqeqeq': ['error', 'always'],
+      'no-eval': 'error',
+      'no-implied-eval': 'error',
+      'no-new-func': 'error',
+      'no-return-await': 'error',
+      'prefer-promise-reject-errors': 'error',
+      'require-await': 'error',
+      
+      // Code style (let Prettier handle formatting)
+      'linebreak-style': ['error', 'unix'],
+      
+      // ES6+
       'no-var': 'error',
-      'no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_'
-        }
-      ],
-      eqeqeq: ['error', 'always'],
-      curly: ['error', 'all'],
-      'dot-notation': 'error',
-      'no-multi-assign': 'error',
+      'prefer-const': ['error', { destructuring: 'all' }],
       'prefer-template': 'error',
-      'prefer-arrow-callback': 'error',
-      'no-else-return': 'error',
-      'no-useless-return': 'error',
-      'no-throw-literal': 'error',
-      'no-await-in-loop': 'warn',
-      'max-depth': ['warn', 4],
-      'max-params': ['warn', 4],
-      complexity: ['warn', 15]
-    }
-  },
-  {
-    files: ['test/**/*.{js,mjs}', 'release.js'],
-    languageOptions: {
-      globals: {
-        ...globals.mocha
-      }
+      'template-curly-spacing': ['error', 'never'],
     },
-    rules: {
-      'no-console': 'off',
-      'max-depth': 'off',
-      'max-params': 'off',
-      complexity: 'off',
-      'no-undef': 'off'
-    }
   },
   {
-    files: ['**/optimizers/*.js'],
+    files: ['test/**/*.js'],
     rules: {
-      'max-params': ['warn', 8]
-    }
+      'no-unused-expressions': 'off', // For chai assertions
+    },
   },
-  {
-    files: ['**/optimizer-registry.js'],
-    rules: {
-      'no-await-in-loop': 'off'
-    }
-  }
 ];

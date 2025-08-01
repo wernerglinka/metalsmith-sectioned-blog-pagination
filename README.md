@@ -53,6 +53,14 @@ Metalsmith( __dirname )
   ...
 ```
 
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `pagesPerPage` | `number` | `6` | Number of blog posts to display per page |
+| `blogDirectory` | `string` | `'blog/'` | Directory containing blog post files (with trailing slash) |
+| `mainTemplate` | `string` | `'blog.md'` | Main blog template file to use as template for pagination |
+
 During the build process, the plugin will create a set of blog landing pages with the specified number of blog posts per page, e.g. `/blog/`, `/blog/2`, `/blog/3`... In a Nunjucks template, a pager would be constructed like this:
 
 ```html

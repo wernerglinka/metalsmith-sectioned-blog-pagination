@@ -119,7 +119,10 @@ function updatePagination(section, { total, pages, pageSize, start, current }) {
 function blogPages(options = {}) {
   const opts = { ...defaults, ...options };
 
-  return function (files, metalsmith, done) {
+  // Return the actual plugin function (two-phase pattern)
+  // Phase 1: Configuration processing and validation happens here
+  // Phase 2: File processing happens in the returned function
+  const plugin = function (files, metalsmith, done) {
     try {
       // Validate configuration
       validateOptions(opts);
@@ -192,6 +195,14 @@ function blogPages(options = {}) {
       done(err);
     }
   };
+
+  // Set function name for debugging (helps with stack traces and debugging)
+  Object.defineProperty(plugin, 'name', { 
+    value: 'blogPagesPlugin',
+    configurable: true 
+  });
+  
+  return plugin;
 }
 
 // ESM export
