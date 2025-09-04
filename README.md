@@ -61,6 +61,76 @@ Metalsmith( __dirname )
 | `blogDirectory` | `string` | `'blog/'` | Directory containing blog post files (with trailing slash) |
 | `mainTemplate` | `string` | `'blog.md'` | Main blog template file to use as template for pagination |
 
+## Examples
+
+### Basic Blog Pagination
+
+Create paginated blog pages with 10 posts per page:
+
+```javascript
+metalsmith
+  .use(collections({
+    blog: {
+      pattern: 'blog/*.md',
+      sortBy: 'date',
+      reverse: true
+    }
+  }))
+  .use(blogPages({
+    pagesPerPage: 10,
+    blogDirectory: 'blog/',
+    mainTemplate: 'blog.md'
+  }))
+```
+
+### Multiple Blog Sections
+
+For sites with multiple blog sections, run the plugin multiple times:
+
+```javascript
+metalsmith
+  // Tech blog section
+  .use(collections({
+    techBlog: {
+      pattern: 'tech/*.md',
+      sortBy: 'date',
+      reverse: true
+    }
+  }))
+  .use(blogPages({
+    pagesPerPage: 8,
+    blogDirectory: 'tech/',
+    mainTemplate: 'tech-blog.md'
+  }))
+  // Personal blog section
+  .use(collections({
+    personalBlog: {
+      pattern: 'personal/*.md',
+      sortBy: 'date',
+      reverse: true
+    }
+  }))
+  .use(blogPages({
+    pagesPerPage: 5,
+    blogDirectory: 'personal/',
+    mainTemplate: 'personal-blog.md'
+  }))
+```
+
+### Custom Blog Directory Structure
+
+Use a nested directory structure for your blog:
+
+```javascript
+metalsmith
+  .use(blogPages({
+    pagesPerPage: 15,
+    blogDirectory: 'content/articles/',
+    mainTemplate: 'articles.md'
+  }))
+  // This will create: /content/articles/, /content/articles/2/, etc.
+```
+
 During the build process, the plugin will create a set of blog landing pages with the specified number of blog posts per page, e.g. `/blog/`, `/blog/2`, `/blog/3`... In a Nunjucks template, a pager would be constructed like this:
 
 ```html

@@ -85,7 +85,7 @@ describe( 'blogPages plugin', () => {
     } );
 
     plugin( files, metalsmith, () => {
-      expect( files[ 'blog/2.md' ] ).to.exist;
+      expect( files[ 'posts/2.md' ] ).to.exist;
       done();
     } );
   } );

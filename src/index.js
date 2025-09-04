@@ -4,6 +4,10 @@
  * with sections that have pagination parameters.
  */
 
+import { validateOptions, validateFiles } from './utils/validation.js';
+import { deepClone } from './utils/clone.js';
+import { updatePagination } from './utils/update.js';
+
 /**
  * @typedef {Object} Options
  * @property {number} pagesPerPage - Number of blog posts to display per page
@@ -17,96 +21,6 @@ const defaults = {
   blogDirectory: 'blog/',
   mainTemplate: 'blog.md'
 };
-
-/**
- * Validate plugin options
- * @param {Options} options - Plugin configuration options
- * @throws {Error} If options are invalid
- * @private
- */
-function validateOptions(options) {
-  if (options.pagesPerPage <= 0) {
-    throw new Error('pagesPerPage must be greater than 0');
-  }
-  if (typeof options.blogDirectory !== 'string') {
-    throw new Error('blogDirectory must be a string');
-  }
-  if (typeof options.mainTemplate !== 'string') {
-    throw new Error('mainTemplate must be a string');
-  }
-}
-
-/**
- * Validate required files and structure
- * @param {Object} files - Metalsmith files object
- * @param {string} mainTemplate - Name of the template file to use
- * @throws {Error} If required files or structure is missing
- * @private
- */
-function validateFiles(files, mainTemplate) {
-  if (!files[mainTemplate]) {
-    throw new Error(`${mainTemplate} template file is required`);
-  }
-  if (!files[mainTemplate].sections?.some((s) => s.hasPagingParams)) {
-    throw new Error(`${mainTemplate} must contain a section with hasPagingParams: true`);
-  }
-}
-
-/**
- * Recursively update nested object property
- * Finds all instances of the key in the object tree and updates their values
- *
- * @param {Object} obj - Target object to traverse and update
- * @param {string} key - Property name to search for and update
- * @param {*} value - New value to assign when property is found
- * @private
- */
-function updateProperty(obj, key, value) {
-  // Quick return for non-objects
-  if (!obj || typeof obj !== 'object') {
-    return;
-  }
-
-  Object.keys(obj).forEach((k) => {
-    if (k === key) {
-      obj[k] = value;
-    }
-
-    // Recursively check nested objects but avoid circular references
-    if (obj[k] && typeof obj[k] === 'object') {
-      updateProperty(obj[k], key, value);
-    }
-  });
-}
-
-/**
- * Update pagination parameters in blog section
- * @param {Object} section - Blog section configuration to update
- * @param {Object} params - Pagination parameters
- * @param {Number} params.total - Total number of blog posts
- * @param {Number} params.pages - Total number of pages
- * @param {Number} params.pageSize - Posts per page
- * @param {Number} params.start - Starting index for current page
- * @param {Number} params.current - Current page number
- * @private
- */
-function updatePagination(section, { total, pages, pageSize, start, current }) {
-  if (!section) {
-    return;
-  }
-
-  const updates = {
-    numberOfBlogs: total,
-    numberOfPages: pages,
-    pageLength: pageSize,
-    pageStart: start,
-    pageNumber: current
-  };
-
-  Object.entries(updates).forEach(([key, value]) => {
-    updateProperty(section, key, value);
-  });
-}
 
 /**
  * A Metalsmith plugin to generate paginated blog landing pages
@@ -164,15 +78,15 @@ function blogPages(options = {}) {
 
       debug('Updated main template %s with pagination parameters', opts.mainTemplate);
 
-      // For backward compatibility, always use 'blog' for output directory
-      const blogDir = 'blog';
+      // Use configured blog directory for output paths (removes trailing slash if present)
+      const blogDir = opts.blogDirectory.replace(/\/$/, '');
 
       // Generate additional pages
       for (let page = 2; page <= totalPages; page++) {
         try {
           const pagePath = `${blogDir}/${page}.md`;
           // Deep clone the template to avoid reference issues
-          const pageContent = JSON.parse(JSON.stringify(mainBlog));
+          const pageContent = deepClone(mainBlog);
           const section = pageContent.sections.find((s) => s.hasPagingParams);
 
           updatePagination(section, {
@@ -207,8 +121,3 @@ function blogPages(options = {}) {
 
 // ESM export
 export default blogPages;
-
-// CommonJS export compatibility
-if (typeof module !== 'undefined') {
-  module.exports = blogPages;
-}
