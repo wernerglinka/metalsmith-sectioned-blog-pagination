@@ -111,9 +111,9 @@ function blogPages(options = {}) {
   };
 
   // Set function name for debugging (helps with stack traces and debugging)
-  Object.defineProperty(plugin, 'name', { 
-    value: 'blogPagesPlugin',
-    configurable: true 
+  Object.defineProperty(plugin, 'name', {
+    value: 'metalsmith-sectioned-blog-pagination',
+    configurable: true
   });
   
   return plugin;
