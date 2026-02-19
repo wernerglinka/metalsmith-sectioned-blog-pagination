@@ -1,6 +1,6 @@
 {
   "name": "metalsmith-sectioned-blog-pagination",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Metalsmith plugin that generates paginated blog landing pages from a main blog template",
   "keywords": [
     "metalsmith-blog-pagination",
