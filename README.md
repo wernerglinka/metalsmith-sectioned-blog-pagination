@@ -198,6 +198,6 @@ This project maintains high statement and line coverage for the source code. Cov
 [metalsmith-url]: https://metalsmith.io
 [license-badge]: https://img.shields.io/github/license/wernerglinka/metalsmith-sectioned-blog-pagination
 [license-url]: LICENSE
-[coverage-badge]: https://img.shields.io/badge/test%20coverage-97%25-brightgreen
+[coverage-badge]: https://img.shields.io/badge/test%20coverage-98%25-brightgreen
 [coverage-url]: https://github.com/wernerglinka/metalsmith-sectioned-blog-pagination/actions/workflows/test.yml
 [modules-badge]: https://img.shields.io/badge/modules-ESM%2FCJS-blue
