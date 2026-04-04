@@ -117,7 +117,7 @@ function blogPages(options = {}) {
           files[pagePath] = pageContent;
           debug('Created pagination page %s', pagePath);
         } catch (err) {
-          throw new Error(`Failed to create page ${page}: ${err.message}`);
+          throw new Error(`Failed to create page ${page}: ${err.message}`, { cause: err });
         }
       }
 
