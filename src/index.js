@@ -13,6 +13,8 @@ import { updatePagination } from './utils/update.js';
  * @property {number} pagesPerPage - Number of blog posts to display per page
  * @property {string} blogDirectory - Directory containing blog post files (with trailing slash)
  * @property {string} [mainTemplate='blog.md'] - Main blog template file to use as template for pagination
+ * @property {string} [collectionName] - Name of the collection to paginate (uses @metalsmith/collections metadata).
+ *   When provided, the plugin counts posts from the named collection instead of scanning blogDirectory.
  */
 
 /** @type {Options} */
@@ -46,17 +48,32 @@ function blogPages(options = {}) {
       const debug = metalsmith.debug ? metalsmith.debug('metalsmith-sectioned-blog-pagination') : () => {};
       debug('Running with options: %O', opts);
 
-      // Find all blog posts
-      const posts = Object.keys(files).filter((file) => file.startsWith(opts.blogDirectory));
+      // Find all blog posts — prefer collection when configured
+      let postCount;
 
-      if (posts.length === 0) {
-        debug('No blog posts found in %s', opts.blogDirectory);
+      if (opts.collectionName) {
+        const collections = metalsmith.metadata().collections || {};
+        const collection = collections[opts.collectionName];
+
+        if (!collection) {
+          throw new Error(`Collection "${opts.collectionName}" not found. Ensure @metalsmith/collections runs before this plugin.`);
+        }
+
+        postCount = collection.length;
+        debug('Using collection "%s" with %d posts', opts.collectionName, postCount);
+      } else {
+        postCount = Object.keys(files).filter((file) => file.startsWith(opts.blogDirectory)).length;
+        debug('Scanning directory "%s", found %d files', opts.blogDirectory, postCount);
+      }
+
+      if (postCount === 0) {
+        debug('No blog posts found');
         return done();
       }
 
       // Calculate pagination
-      const totalPages = Math.ceil(posts.length / opts.pagesPerPage);
-      debug('Found %d posts, creating %d pages', posts.length, totalPages);
+      const totalPages = Math.ceil(postCount / opts.pagesPerPage);
+      debug('Found %d posts, creating %d pages', postCount, totalPages);
 
       // Skip if only one page is needed
       if (totalPages <= 1) {
@@ -69,7 +86,7 @@ function blogPages(options = {}) {
       const pagingSection = mainBlog.sections.find((s) => s.hasPagingParams);
 
       updatePagination(pagingSection, {
-        total: posts.length,
+        total: postCount,
         pages: totalPages,
         pageSize: opts.pagesPerPage,
         start: 0,
@@ -90,7 +107,7 @@ function blogPages(options = {}) {
           const section = pageContent.sections.find((s) => s.hasPagingParams);
 
           updatePagination(section, {
-            total: posts.length,
+            total: postCount,
             pages: totalPages,
             pageSize: opts.pagesPerPage,
             start: (page - 1) * opts.pagesPerPage,
