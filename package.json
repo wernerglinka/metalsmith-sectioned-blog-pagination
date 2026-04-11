@@ -68,7 +68,7 @@
     "lint": "eslint --fix .",
     "lint:check": "eslint --fix-dry-run .",
     "pre-release": "npm run lint && npm run format:check && npm test && npx metalsmith-plugin-mcp-server validate .",
-    "prepublishOnly": "npm run build",
+    "prepare": "npm run build",
     "release:check": "npm run lint:check && npm run build && release-it --dry-run",
     "release:patch": "./scripts/release.sh patch --ci",
     "release:minor": "./scripts/release.sh minor --ci",
