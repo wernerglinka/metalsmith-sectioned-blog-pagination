@@ -1,13 +1,11 @@
 # Metalsmith Sectioned Blog Pagination
 
-Metalsmith plugin that generates  metadata for blog pagination for pages built with a [modular page building paradigm](https://metalsmith-components.netlify.app/).
+Metalsmith plugin that generates metadata for blog pagination for pages built with a
+[modular page building paradigm](https://metalsmith-components.netlify.app/).
 
-[![metalsmith: plugin][metalsmith-badge]][metalsmith-url]
-[![npm: version][npm-badge]][npm-url]
-[![license: ISC][license-badge]][license-url]
-[![coverage][coverage-badge]][coverage-url]
+[![metalsmith: plugin][metalsmith-badge]][metalsmith-url] [![npm: version][npm-badge]][npm-url]
+[![license: ISC][license-badge]][license-url] [![coverage][coverage-badge]][coverage-url]
 [![ESM/CommonJS][modules-badge]][npm-url]
-[![Known Vulnerabilities](https://snyk.io/test/npm/metalsmith-sectioned-blog-pagination/badge.svg)](https://snyk.io/test/npm/metalsmith-sectioned-blog-pagination)
 
 ## Features
 
@@ -55,11 +53,39 @@ Metalsmith( __dirname )
 
 ## Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `pagesPerPage` | `number` | `6` | Number of blog posts to display per page |
-| `blogDirectory` | `string` | `'blog/'` | Directory containing blog post files (with trailing slash) |
-| `mainTemplate` | `string` | `'blog.md'` | Main blog template file to use as template for pagination |
+| Option           | Type     | Default     | Description                                                                                                                                                                                                                                                                                                                                                        |
+| ---------------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `pagesPerPage`   | `number` | `6`         | Number of blog posts to display per page                                                                                                                                                                                                                                                                                                                           |
+| `blogDirectory`  | `string` | `'blog/'`   | Directory containing blog post files (with trailing slash)                                                                                                                                                                                                                                                                                                         |
+| `mainTemplate`   | `string` | `'blog.md'` | Main blog template file to use as template for pagination                                                                                                                                                                                                                                                                                                          |
+| `collectionName` | `string` | none        | Name of a [@metalsmith/collections](https://github.com/metalsmith/collections) collection to count posts from, instead of scanning `blogDirectory`. Use this when the directory holds files that are not collection members (category landing pages, generated pages), which would otherwise inflate the page count. Requires the collections plugin to run first. |
+
+## Section frontmatter
+
+The main template must contain a section marked `hasPagingParams: true`. That is all the frontmatter
+needs; the plugin creates a `pagingParams` object on that section and fills it in at build time:
+
+```yaml
+sections:
+  - sectionType: blog-list
+    hasPagingParams: true
+```
+
+After the build the section carries:
+
+```yaml
+pagingParams:
+  numberOfBlogs: 42 # Total posts in the collection
+  numberOfPages: 7 # Total pagination pages
+  pageLength: 6 # Posts per page (pagesPerPage)
+  pageStart: 0 # Index of this page's first post
+  pageNumber: 1 # This page's number, 1-indexed
+```
+
+Declaring placeholder keys in the frontmatter still works: any of the five keys that already exist
+anywhere in the section are updated in place, and only the missing ones are added under
+`pagingParams`. (Before v1.4.0 the placeholders were required — a section with only
+`hasPagingParams: true` was silently left without paging values.)
 
 ## Examples
 
@@ -69,18 +95,22 @@ Create paginated blog pages with 10 posts per page:
 
 ```javascript
 metalsmith
-  .use(collections({
-    blog: {
-      pattern: 'blog/*.md',
-      sortBy: 'date',
-      reverse: true
-    }
-  }))
-  .use(blogPages({
-    pagesPerPage: 10,
-    blogDirectory: 'blog/',
-    mainTemplate: 'blog.md'
-  }))
+  .use(
+    collections({
+      blog: {
+        pattern: 'blog/*.md',
+        sortBy: 'date',
+        reverse: true,
+      },
+    })
+  )
+  .use(
+    blogPages({
+      pagesPerPage: 10,
+      blogDirectory: 'blog/',
+      mainTemplate: 'blog.md',
+    })
+  );
 ```
 
 ### Multiple Blog Sections
@@ -90,31 +120,39 @@ For sites with multiple blog sections, run the plugin multiple times:
 ```javascript
 metalsmith
   // Tech blog section
-  .use(collections({
-    techBlog: {
-      pattern: 'tech/*.md',
-      sortBy: 'date',
-      reverse: true
-    }
-  }))
-  .use(blogPages({
-    pagesPerPage: 8,
-    blogDirectory: 'tech/',
-    mainTemplate: 'tech-blog.md'
-  }))
+  .use(
+    collections({
+      techBlog: {
+        pattern: 'tech/*.md',
+        sortBy: 'date',
+        reverse: true,
+      },
+    })
+  )
+  .use(
+    blogPages({
+      pagesPerPage: 8,
+      blogDirectory: 'tech/',
+      mainTemplate: 'tech-blog.md',
+    })
+  )
   // Personal blog section
-  .use(collections({
-    personalBlog: {
-      pattern: 'personal/*.md',
-      sortBy: 'date',
-      reverse: true
-    }
-  }))
-  .use(blogPages({
-    pagesPerPage: 5,
-    blogDirectory: 'personal/',
-    mainTemplate: 'personal-blog.md'
-  }))
+  .use(
+    collections({
+      personalBlog: {
+        pattern: 'personal/*.md',
+        sortBy: 'date',
+        reverse: true,
+      },
+    })
+  )
+  .use(
+    blogPages({
+      pagesPerPage: 5,
+      blogDirectory: 'personal/',
+      mainTemplate: 'personal-blog.md',
+    })
+  );
 ```
 
 ### Custom Blog Directory Structure
@@ -122,16 +160,19 @@ metalsmith
 Use a nested directory structure for your blog:
 
 ```javascript
-metalsmith
-  .use(blogPages({
+metalsmith.use(
+  blogPages({
     pagesPerPage: 15,
     blogDirectory: 'content/articles/',
-    mainTemplate: 'articles.md'
-  }))
-  // This will create: /content/articles/, /content/articles/2/, etc.
+    mainTemplate: 'articles.md',
+  })
+);
+// This will create: /content/articles/, /content/articles/2/, etc.
 ```
 
-During the build process, the plugin will create a set of blog landing pages with the specified number of blog posts per page, e.g. `/blog/`, `/blog/2`, `/blog/3`... In a Nunjucks template, a pager would be constructed like this:
+During the build process, the plugin will create a set of blog landing pages with the specified
+number of blog posts per page, e.g. `/blog/`, `/blog/2`, `/blog/3`... In a Nunjucks template, a
+pager would be constructed like this:
 
 ```html
 <ul class="blogs-pagination">
@@ -147,25 +188,32 @@ During the build process, the plugin will create a set of blog landing pages wit
 </ul>
 ```
 
-And [complete template implementation in Nunjucks](https://github.com/wernerglinka/glinka.dev.2024/blob/main/templates/blocks/all-blogs.njk) for such a blog landing page can be viewed here. And here is an example of [an implementation](https://www.glinka.co/blog/).
+And
+[complete template implementation in Nunjucks](https://github.com/wernerglinka/glinka.dev.2024/blob/main/templates/blocks/all-blogs.njk)
+for such a blog landing page can be viewed here. And here is an example of
+[an implementation](https://www.glinka.co/blog/).
 
 ### Debug
 
-To enable debug logs, set the `DEBUG` environment variable to `metalsmith-sectioned-blog-pagination`:
+To enable debug logs, set the `DEBUG` environment variable to
+`metalsmith-sectioned-blog-pagination`:
 
 Linux/Mac:
+
 ```
 DEBUG=metalsmith-sectioned-blog-pagination
 ```
 
 Windows:
+
 ```
 set DEBUG=metalsmith-sectioned-blog-pagination
 ```
 
 ### CLI usage
 
-To use this plugin with the Metalsmith CLI, add `metalsmith-sectioned-blog-pagination` to the `plugins` key in your `metalsmith.json` file:
+To use this plugin with the Metalsmith CLI, add `metalsmith-sectioned-blog-pagination` to the
+`plugins` key in your `metalsmith.json` file:
 
 ```json
 {
@@ -182,7 +230,8 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-sectioned-blog-pagin
 
 ## Test Coverage
 
-This project maintains high statement and line coverage for the source code. Coverage is verified during the release process using the c8 coverage tool.
+This project maintains high statement and line coverage for the source code. Coverage is verified
+during the release process using the c8 coverage tool.
 
 ## Author
 
@@ -196,8 +245,10 @@ This project maintains high statement and line coverage for the source code. Cov
 [npm-url]: https://www.npmjs.com/package/metalsmith-sectioned-blog-pagination
 [metalsmith-badge]: https://img.shields.io/badge/metalsmith-plugin-green.svg?longCache=true
 [metalsmith-url]: https://metalsmith.io
-[license-badge]: https://img.shields.io/github/license/wernerglinka/metalsmith-sectioned-blog-pagination
+[license-badge]:
+  https://img.shields.io/github/license/wernerglinka/metalsmith-sectioned-blog-pagination
 [license-url]: LICENSE
 [coverage-badge]: https://img.shields.io/badge/test%20coverage-97%25-brightgreen
-[coverage-url]: https://github.com/wernerglinka/metalsmith-sectioned-blog-pagination/actions/workflows/test.yml
+[coverage-url]:
+  https://github.com/wernerglinka/metalsmith-sectioned-blog-pagination/actions/workflows/test.yml
 [modules-badge]: https://img.shields.io/badge/modules-ESM%2FCJS-blue

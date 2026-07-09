@@ -3,14 +3,14 @@ module.exports = {
     output: {
       file: 'index.js',
       format: 'esm',
-      extension: '.js'
-    }
+      extension: '.js',
+    },
   },
   cjs: {
     output: {
       file: 'index.cjs',
       format: 'cjs',
-      extension: '.cjs'
-    }
-  }
+      extension: '.cjs',
+    },
+  },
 };

@@ -39,20 +39,20 @@
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@metalsmith/collections": "^2.0.0",
-    "auto-changelog": "2.5.0",
+    "auto-changelog": "2.6.0",
     "c8": "11.0.0",
     "chai": "6.2.2",
     "depcheck": "1.4.7",
-    "dotenv": "17.4.0",
-    "eslint": "10.2.0",
+    "dotenv": "17.4.2",
+    "eslint": "10.6.0",
     "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-prettier": "5.5.5",
-    "globals": "17.4.0",
+    "eslint-plugin-prettier": "5.5.6",
+    "globals": "17.7.0",
     "metalsmith": "2.7.0",
     "microbundle": "0.15.1",
-    "mocha": "11.7.5",
-    "prettier": "3.8.1",
-    "release-it": "19.2.4"
+    "mocha": "11.7.6",
+    "prettier": "3.9.5",
+    "release-it": "20.2.1"
   },
   "peerDependencies": {
     "metalsmith": "^2.5.1"

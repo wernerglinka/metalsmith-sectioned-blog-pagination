@@ -89,6 +89,49 @@ describe('blogPages plugin — directory scan (default)', () => {
   });
 });
 
+describe('blogPages plugin — sections without placeholder pagingParams', () => {
+  it('should create the pagingParams block when the frontmatter has none', async () => {
+    // The no-placeholders fixture declares hasPagingParams: true but no
+    // pagingParams block. Before the fix this was a silent no-op: the
+    // update walked the section, found no matching keys, and dropped
+    // every value, so templates rendered the full collection.
+    const { files } = await buildWith('no-placeholders', [
+      blogPages({ pagesPerPage: 2 })
+    ]);
+
+    const mainSection = files['blog.md'].sections[0];
+    expect(mainSection.pagingParams).to.deep.equal({
+      numberOfBlogs: 3,
+      numberOfPages: 2,
+      pageLength: 2,
+      pageStart: 0,
+      pageNumber: 1
+    });
+
+    const page2Section = files['blog/2.md'].sections[0];
+    expect(page2Section.pagingParams.pageStart).to.equal(2);
+    expect(page2Section.pagingParams.pageNumber).to.equal(2);
+  });
+
+  it('should fill in missing keys without disturbing declared ones', async () => {
+    // A partial placeholder block: declared keys are updated in place,
+    // undeclared ones are added to the same pagingParams object.
+    const { files } = await buildWith('no-placeholders', [
+      (files, metalsmith, done) => {
+        files['blog.md'].sections[0].pagingParams = { pageNumber: '', customKey: 'kept' };
+        done();
+      },
+      blogPages({ pagesPerPage: 2 })
+    ]);
+
+    const mainSection = files['blog.md'].sections[0];
+    expect(mainSection.pagingParams.pageNumber).to.equal(1);
+    expect(mainSection.pagingParams.numberOfPages).to.equal(2);
+    expect(mainSection.pagingParams.pageStart).to.equal(0);
+    expect(mainSection.pagingParams.customKey).to.equal('kept');
+  });
+});
+
 describe('blogPages plugin — collectionName option', () => {
   it('should count only collection members, not category pages', async () => {
     // The with-collections fixture has 3 actual posts + 2 category landing pages

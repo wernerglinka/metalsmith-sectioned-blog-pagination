@@ -20,20 +20,20 @@ export default [
       'no-console': ['error', { allow: ['warn', 'error'] }],
       'no-debugger': 'error',
       'no-alert': 'error',
-      
+
       // Best practices
-      'curly': ['error', 'all'],
-      'eqeqeq': ['error', 'always'],
+      curly: ['error', 'all'],
+      eqeqeq: ['error', 'always'],
       'no-eval': 'error',
       'no-implied-eval': 'error',
       'no-new-func': 'error',
       'no-return-await': 'error',
       'prefer-promise-reject-errors': 'error',
       'require-await': 'error',
-      
+
       // Code style (let Prettier handle formatting)
       'linebreak-style': ['error', 'unix'],
-      
+
       // ES6+
       'no-var': 'error',
       'prefer-const': ['error', { destructuring: 'all' }],
