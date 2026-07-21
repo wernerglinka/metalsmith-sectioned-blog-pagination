@@ -249,7 +249,7 @@ with Node's native test runner (`node --test --experimental-test-coverage`).
 [license-badge]:
   https://img.shields.io/github/license/wernerglinka/metalsmith-sectioned-blog-pagination
 [license-url]: LICENSE
-[coverage-badge]: https://img.shields.io/badge/test%20coverage-97%25-brightgreen
+[coverage-badge]: https://img.shields.io/badge/test%20coverage-025-red
 [coverage-url]:
   https://github.com/wernerglinka/metalsmith-sectioned-blog-pagination/actions/workflows/test.yml
 [modules-badge]: https://img.shields.io/badge/module-ESM-blue
