@@ -4,18 +4,19 @@ Metalsmith plugin that generates metadata for blog pagination for pages built wi
 [modular page building paradigm](https://metalsmith-components.netlify.app/).
 
 [![metalsmith: plugin][metalsmith-badge]][metalsmith-url] [![npm: version][npm-badge]][npm-url]
-[![license: ISC][license-badge]][license-url] [![coverage][coverage-badge]][coverage-url]
-[![ESM/CommonJS][modules-badge]][npm-url]
+[![license: MIT][license-badge]][license-url] [![coverage][coverage-badge]][coverage-url]
+[![ESM][modules-badge]][npm-url]
 
 ## Features
 
-- **ESM and CommonJS support**:
-  - ESM: `import prism from 'metalsmith-prism'`
-  - CommonJS: `const prism = require('metalsmith-prism')`
+- Generates pagination metadata for blog landing pages built with a modular/sectioned page paradigm
+- Fills in `pagingParams` on a section marked `hasPagingParams: true`
+- Optionally counts posts from a named `@metalsmith/collections` collection
+- **ESM-only**, requires Node >= 22. CommonJS consumers can load it on Node 22 via the built-in ESM interop.
 
 ## Requirements
 
-- Node.js >= 18.0.0
+- Node.js >= 22.0.0
 - Metalsmith >= 2.6.0
 
 ## Installation
@@ -31,7 +32,7 @@ Pass options to `metalsmith-sectioned-blog-pagination` in `metalsmith.use` :
 The plugin must be used before the Markdown, Permalinks and Layouts plugins.
 
 ```js
-Metalsmith( __dirname )
+Metalsmith(import.meta.dirname)
   .use(collections({
     blog: {
       pattern: "blog/*.md",
@@ -230,8 +231,8 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-sectioned-blog-pagin
 
 ## Test Coverage
 
-This project maintains high statement and line coverage for the source code. Coverage is verified
-during the release process using the c8 coverage tool.
+This project maintains high statement and line coverage for the source code. Coverage is measured
+with Node's native test runner (`node --test --experimental-test-coverage`).
 
 ## Author
 
@@ -251,4 +252,4 @@ during the release process using the c8 coverage tool.
 [coverage-badge]: https://img.shields.io/badge/test%20coverage-97%25-brightgreen
 [coverage-url]:
   https://github.com/wernerglinka/metalsmith-sectioned-blog-pagination/actions/workflows/test.yml
-[modules-badge]: https://img.shields.io/badge/modules-ESM%2FCJS-blue
+[modules-badge]: https://img.shields.io/badge/module-ESM-blue

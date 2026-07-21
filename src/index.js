@@ -21,7 +21,7 @@ import { updatePagination } from './utils/update.js';
 const defaults = {
   pagesPerPage: 6,
   blogDirectory: 'blog/',
-  mainTemplate: 'blog.md',
+  mainTemplate: 'blog.md'
 };
 
 /**
@@ -44,10 +44,7 @@ function blogPages(options = {}) {
       validateOptions(opts);
       validateFiles(files, opts.mainTemplate);
 
-      // Setup debug if available
-      const debug = metalsmith.debug
-        ? metalsmith.debug('metalsmith-sectioned-blog-pagination')
-        : () => {};
+      const debug = metalsmith.debug('metalsmith-sectioned-blog-pagination');
       debug('Running with options: %O', opts);
 
       // Find all blog posts — prefer collection when configured
@@ -94,7 +91,7 @@ function blogPages(options = {}) {
         pages: totalPages,
         pageSize: opts.pagesPerPage,
         start: 0,
-        current: 1,
+        current: 1
       });
 
       debug('Updated main template %s with pagination parameters', opts.mainTemplate);
@@ -115,7 +112,7 @@ function blogPages(options = {}) {
             pages: totalPages,
             pageSize: opts.pagesPerPage,
             start: (page - 1) * opts.pagesPerPage,
-            current: page,
+            current: page
           });
 
           files[pagePath] = pageContent;
@@ -134,7 +131,7 @@ function blogPages(options = {}) {
   // Set function name for debugging (helps with stack traces and debugging)
   Object.defineProperty(plugin, 'name', {
     value: 'metalsmith-sectioned-blog-pagination',
-    configurable: true,
+    configurable: true
   });
 
   return plugin;

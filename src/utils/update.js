@@ -61,12 +61,10 @@ export function updatePagination(section, { total, pages, pageSize, start, curre
     numberOfPages: pages,
     pageLength: pageSize,
     pageStart: start,
-    pageNumber: current,
+    pageNumber: current
   };
 
-  const missing = Object.entries(updates).filter(
-    ([key, value]) => !updateProperty(section, key, value)
-  );
+  const missing = Object.entries(updates).filter(([key, value]) => !updateProperty(section, key, value));
 
   if (missing.length > 0) {
     if (!section.pagingParams || typeof section.pagingParams !== 'object') {

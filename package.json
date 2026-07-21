@@ -9,27 +9,17 @@
     "static-site",
     "pagination"
   ],
-  "main": "lib/index.cjs",
-  "module": "lib/index.js",
-  "exports": {
-    "import": "./lib/index.js",
-    "require": "./lib/index.cjs",
-    "default": "./lib/index.js"
-  },
   "type": "module",
+  "exports": "./src/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wernerglinka/metalsmith-sectioned-blog-pagination.git"
   },
   "files": [
-    "lib",
+    "src/**/*.js",
     "README.md",
     "LICENSE"
   ],
-  "directories": {
-    "lib": "lib",
-    "test": "test"
-  },
   "author": "Werner Glinka (https://glinka.co)",
   "license": "MIT",
   "bugs": {
@@ -37,61 +27,34 @@
   },
   "homepage": "https://github.com/wernerglinka/metalsmith-sectioned-blog-pagination#readme",
   "devDependencies": {
-    "@eslint/js": "10.0.1",
+    "@biomejs/biome": "^2.4.0",
     "@metalsmith/collections": "^2.0.0",
-    "auto-changelog": "2.6.0",
-    "c8": "11.0.0",
-    "chai": "6.2.2",
-    "depcheck": "1.4.7",
-    "dotenv": "17.4.2",
-    "eslint": "10.6.0",
-    "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-prettier": "5.5.6",
-    "globals": "17.7.0",
-    "metalsmith": "2.7.0",
-    "microbundle": "0.15.1",
-    "mocha": "11.7.6",
-    "prettier": "3.9.5",
-    "release-it": "20.2.1"
-  },
-  "peerDependencies": {
-    "metalsmith": "^2.5.1"
+    "auto-changelog": "^2.5.0",
+    "depcheck": "^1.4.7",
+    "metalsmith": "^2.5.1",
+    "release-it": "^20.0.0"
   },
   "scripts": {
     "audit": "npm audit",
-    "build": "microbundle --entry src/index.js --output lib/index.js --target node -f esm,cjs --strict --generateTypes=false",
     "changelog": "auto-changelog -u --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release)'",
-    "coverage": "c8 --include=src/**/*.js --reporter=lcov --reporter=text-summary mocha test/**/*.mjs -t 15000",
     "depcheck": "depcheck",
-    "format": "prettier --write \"**/*.{yml,md,js,json}\"",
-    "format:check": "prettier --list-different \"**/*.{yml,md,js,json}\"",
-    "lint": "eslint --fix .",
-    "lint:check": "eslint --fix-dry-run .",
-    "pre-release": "npm run lint && npm run format:check && npm test && npx metalsmith-plugin-mcp-server validate .",
-    "prepare": "npm run build",
-    "release:check": "npm run lint:check && npm run build && release-it --dry-run",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome check --write .",
+    "lint:check": "biome check .",
+    "pre-release": "npm run lint:check && npm run format:check && npm test && npx metalsmith-plugin-mcp-server validate .",
+    "release:check": "npm run lint:check && release-it --dry-run",
     "release:patch": "./scripts/release.sh patch --ci",
     "release:minor": "./scripts/release.sh minor --ci",
     "release:major": "./scripts/release.sh major --ci",
-    "test": "c8 mocha test/**/*.mjs -t 15000",
-    "test:coverage": "c8 npm test",
-    "test:debug": "DEBUG=metalsmith-sectioned-blog-pagination:* npm test",
-    "test:e2e": "serve -l 3000 test/fixtures"
+    "test": "node --test --test-timeout=15000 'test/**/*.test.js'",
+    "coverage": "mkdir -p coverage && node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info --test-timeout=15000 'test/**/*.test.js'",
+    "test:coverage": "npm run coverage"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">= 22.0.0"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "c8": {
-    "all": true,
-    "include": [
-      "src/**/*.js"
-    ],
-    "reporter": [
-      "text",
-      "lcov"
-    ]
   }
 }
