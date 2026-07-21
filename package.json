@@ -31,7 +31,7 @@
     "test": "test"
   },
   "author": "Werner Glinka (https://glinka.co)",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/wernerglinka/metalsmith-sectioned-blog-pagination/issues"
   },
